@@ -117,11 +117,4 @@ Co-signer Required: false
 Building this project helped me grasp fundamental Drools concepts, especially how facts interact with rules and the flow of the rule engine. A key learning curve was understanding how to prevent rules from entering an infinite loop by carefully structuring `when` conditions and ensuring `modify` actions properly change the state to prevent re-firing. This experience has deepened my appreciation for declarative programming and the power of rule engines in managing complex business logic.
 
 ---
-
-## Connect with Me 🤝
-
-Feel free to reach out if you have questions or feedback!
-
-* [Your LinkedIn Profile Link]
-* [Your GitHub Profile Link]
 ```
