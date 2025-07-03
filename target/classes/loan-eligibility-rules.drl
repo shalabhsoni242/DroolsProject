@@ -1,0 +1,61 @@
+package com.example.loan
+
+import com.example.loan.Applicant;
+import com.example.loan.CreditReport;
+import com.example.loan.LoanApplication;
+
+// Rule 1: Reject if credit score is too low
+rule "Reject Loan - Low Credit Score(<600)"
+dialect "java" 
+    when
+        $creditRepo : CreditReport( creditScore < 600)
+        $loanApp : LoanApplication(approved == false,  rejectionReason == "Not evaluated" || rejectionReason == null )
+    then
+        modify($loanApp){
+            setApproved(false),
+            setRejectionReason("Credit score too low (below 600).")
+        }
+        System.out.println("Rule Fired: Reject Loan - Low Credit Score");
+end
+
+// Rule 2: Reject if income is low AND debt is high
+rule "Reject Loan - Income vs Debt"
+dialect "java" 
+    when    
+        $applicant : Applicant(annualIncome < 30000)
+        $creditRepo : CreditReport(totalExistingDebt > 10000)
+        $loanApp : LoanApplication(approved == false,  rejectionReason == "Not evaluated" || rejectionReason == null )
+    then    
+        modify($loanApp){
+            setApproved(false),
+            setRejectionReason("Annual Income too low + high existing debt")
+        }
+        System.out.println("Rule Fired: Reject Loan - Low income hight debt");
+end
+
+// Rule 3: Require co-signer if employment is less than 1 year
+rule "Require co-signer for short employment"
+dialect "java" 
+    when    
+        $applicant : Applicant(yearsEmployed < 1)
+        $loanApp : LoanApplication(approved == false, coSignerRequired == false, rejectionReason == "Not evaluated" || rejectionReason == null || rejectionReason == "Co-signer required due to short employment history." ) 
+    then    
+        modify($loanApp){
+            setCoSignerRequired( true ),
+            setRejectionReason("Co-signer required due to short employment history.")
+        }
+        System.out.println("Rule Fired: Require Co-signer - Short Employment");
+end
+
+// Rule 4: General Approval Rule (if no rejection rules have fired)
+rule "Approve Loan"
+dialect "java" 
+    when    
+        $loanApp : LoanApplication(approved == false,  rejectionReason == "Not evaluated" || rejectionReason == null )
+    then    
+        modify($loanApp){
+            setApproved(true),
+            setRejectionReason("Loan Approved")
+        }
+        System.out.println("Rule Fired: Default Rule - Loan Approved");
+end
