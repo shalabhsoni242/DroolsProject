@@ -51,7 +51,7 @@ end
 rule "Approve Loan"
 dialect "java" 
     when    
-        $loanApp : LoanApplication(approved == false,  rejectionReason == "Not evaluated" || rejectionReason == null )
+        $loanApp : LoanApplication(approved == false,  (rejectionReason == "Not evaluated" || rejectionReason == null ))
     then    
         modify($loanApp){
             setApproved(true),
